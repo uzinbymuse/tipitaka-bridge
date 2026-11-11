@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>စာသား ရှာရန် — တိပိဋက တံတား</title>
+<style>
+  body{font-family:"Myanmar Text","Noto Sans Myanmar",sans-serif;max-width:640px;margin:0 auto;padding:32px 16px;color:#222;background:#fdfbf7}
+  h1{font-size:20px;margin:0 0 8px}
+  p{line-height:1.9}
+  a{color:#8a6d1b}
+  .card{border:1px solid #e5dcc3;background:#fff;padding:16px;border-radius:10px;margin-top:16px}
+</style>
+</head>
+<body>
+<h1>စာသား ရှာရန်</h1>
+<p id="status">စာသား စာမျက်နှာသို့ သွားနေသည်…</p>
+<div class="card" id="fallback" style="display:none">
+  <p id="msg"></p>
+  <p><a id="backImage" href="https://tipitakapali-zin.vercel.app/">မူရင်းပုံ စာကြည့်တိုက်</a></p>
+  <p><a href="https://tipitaka-web-three.vercel.app/">စာသား ဖတ်ရန် (တိပိဋက စာသား)</a></p>
+</div>
+<script>
+(function(){
+  var params = new URLSearchParams(location.search);
+  var book = params.get('book') || '';
+  var page = parseInt(params.get('page') || '1', 10) || 1;
+  var pdf = parseInt(params.get('pdf') || '0', 10) || 0;
+  var TEXT_APP = 'https://tipitaka-web-three.vercel.app/';
+  var IMAGE_APP = 'https://tipitakapali-zin.vercel.app/';
+
+  function showFallback(msg){
+    document.getElementById('status').style.display = 'none';
+    document.getElementById('msg').textContent = msg;
+    document.getElementById('fallback').style.display = 'block';
+  }
+
+  if (!book){
+    showFallback('စာအုပ် မရွေးထားပါ။ မူရင်းပုံ ဖတ်နေစဉ် "စာသား ရှာရန်" ကို နှိပ်ပါ။');
+    return;
+  }
+
+  fetch('../mapping.json').then(function(r){ return r.json(); }).then(function(data){
+    var mapping = data.rows || data;
+    var matches = [];
+    for (var i = 0; i < mapping.length; i++){
+      var r = mapping[i];
+      if (r.image_id === book && page >= r.image_printed_first && page <= r.image_printed_last){ matches.push(r); }
+    }
+    var row = null;
+    if (matches.length === 1){
+      row = matches[0];
+    } else if (matches.length > 1 && pdf){
+      // Printed numbers restart between two works in one volume
+      // (e.g. Vibhanga Mula/Anu-Tika): the PDF page tells them apart.
+      for (var j = 0; j < matches.length; j++){
+        var m = matches[j];
+        if (m.pdf_first && m.pdf_last && pdf >= m.pdf_first && pdf <= m.pdf_last){ row = m; break; }
+      }
+      if (!row) row = matches[0];
+    } else if (matches.length > 1){
+      row = matches[0];
+    }
+    if (!row){
+      showFallback('ဒီစာမျက်နှာအတွက် စာသား မရှိသေးပါ (' + book + '၊ ပုံနှိပ် ' + page + ')။');
+      return;
+    }
+    var textPage = page + (row.offset || 0);
+    var url = TEXT_APP + '?book=' + encodeURIComponent(row.text_id) + '&page=' + textPage;
+    location.replace(url);
+  }).catch(function(){
+    showFallback('ချိတ်ဆက်မှု မအောင်မြင်ပါ။ ထပ်ကြိုးစားကြည့်ပါ။');
+  });
+})();
+</script>
+</body>
+</html>

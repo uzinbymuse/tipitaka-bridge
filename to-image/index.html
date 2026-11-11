@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>မူရင်းပုံ ကြည့်ရန် — တိပိဋက တံတား</title>
+<style>
+  body{font-family:"Myanmar Text","Noto Sans Myanmar",sans-serif;max-width:640px;margin:0 auto;padding:32px 16px;color:#222;background:#fdfbf7}
+  h1{font-size:20px;margin:0 0 8px}
+  p{line-height:1.9}
+  a{color:#8a6d1b}
+  .card{border:1px solid #e5dcc3;background:#fff;padding:16px;border-radius:10px;margin-top:16px}
+</style>
+</head>
+<body>
+<h1>မူရင်းပုံ ကြည့်ရန်</h1>
+<p id="status">ပုံ စာမျက်နှာသို့ သွားနေသည်…</p>
+<div class="card" id="fallback" style="display:none">
+  <p id="msg"></p>
+  <p><a id="backText" href="https://tipitaka-web-three.vercel.app/">စာသား ဖတ်ရန် (တိပိဋက စာသား)</a></p>
+  <p><a href="https://tipitakapali-zin.vercel.app/">မူရင်းပုံ စာကြည့်တိုက်</a></p>
+</div>
+<script>
+(function(){
+  var params = new URLSearchParams(location.search);
+  var book = params.get('book') || '';
+  var page = parseInt(params.get('page') || '1', 10) || 1;
+  var TEXT_APP = 'https://tipitaka-web-three.vercel.app/';
+  var IMAGE_APP = 'https://tipitakapali-zin.vercel.app/';
+  var R2_BOOKS = 'https://pub-a798847c0d8e477ea01a3d9a9435680e.r2.dev/books.json';
+  var R2_IMG = 'https://pub-a798847c0d8e477ea01a3d9a9435680e.r2.dev/books/';
+
+  function showFallback(msg){
+    document.getElementById('status').style.display = 'none';
+    document.getElementById('msg').textContent = msg;
+    document.getElementById('fallback').style.display = 'block';
+  }
+
+  function pdfForPrinted(segments, printed){
+    // Mirror viewer.html segmentForPrinted()
+    if (segments.length && segments[0][0] - segments[0][2] === 2 && printed === 1){
+      return segments[0][0] - 1;
+    }
+    for (var i = 0; i < segments.length; i++){
+      var s = segments[i];
+      if (printed >= s[0] - s[2] && printed <= s[1] - s[2]) return printed + s[2];
+    }
+    if (!segments.length) return printed;
+    if (printed < segments[0][0] - segments[0][2]) return segments[0][0];
+    var last = segments[segments.length - 1];
+    return last[1];
+  }
+
+  function withTimeout(promise, ms){
+    return Promise.race([
+      promise,
+      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, ms); })
+    ]);
+  }
+
+  if (!book){
+    showFallback('စာအုပ် မရွေးထားပါ။ စာသား ဖတ်ရန် စာမျက်နှာမှ "မူရင်းပုံ ကြည့်ရန်" ကို နှိပ်ပါ။');
+    return;
+  }
+
+  Promise.all([
+    fetch('../mapping.json').then(function(r){ return r.json(); }),
+    fetch('../image-books.json').then(function(r){ return r.json(); })
+  ]).then(function(results){
+    var mapping = results[0].rows || results[0];
+    var baked = results[1];
+    // Try the live R2 book list first (segments may have been corrected);
+    // fall back to the copy baked into this repo.
+    var live = withTimeout(
+      fetch(R2_BOOKS).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
+      2500
+    ).catch(function(){ return null; });
+    return live.then(function(liveBooks){
+      var books = baked;
+      if (Array.isArray(liveBooks) && liveBooks.length){
+        books = {};
+        liveBooks.forEach(function(b){
+          books[b.id] = {
+            title: b.title, total: b.total,
+            segments: (b.segments || []).map(function(s){ return [s.pdfStart, s.pdfEnd, s.offset]; })
+          };
+        });
+      }
+      var row = null;
+      for (var i = 0; i < mapping.length; i++){
+        var r = mapping[i];
+        if (r.text_id === book && page >= r.image_printed_first && page <= r.image_printed_last){ row = r; break; }
+      }
+      if (!row){
+        var name = book;
+        showFallback('ဒီစာအုပ်အတွက် မူရင်းပုံ မရှိသေးပါ (' + name + '၊ စာမျက်နှာ ' + page + ')။');
+        return;
+      }
+      var printed = page - (row.offset || 0);
+      var ib = books[row.image_id];
+      if (!ib){
+        showFallback('ဒီစာအုပ်အတွက် မူရင်းပုံ မရှိသေးပါ။');
+        return;
+      }
+      var seg = ib.segments.map(function(s){ return s[0] + '-' + s[1] + ':' + s[2]; }).join(',');
+      var pdf = pdfForPrinted(ib.segments, printed);
+      var q = new URLSearchParams();
+      q.set('book', row.image_id);
+      q.set('total', String(ib.total));
+      if (seg) q.set('seg', seg);
+      q.set('img', R2_IMG + row.image_id + '/');
+      q.set('title', ib.title);
+      q.set('home', TEXT_APP);
+      var url = IMAGE_APP + 'viewer.html?' + q.toString() + '#pdf=' + pdf;
+      location.replace(url);
+    });
+  }).catch(function(){
+    showFallback('ချိတ်ဆက်မှု မအောင်မြင်ပါ။ ထပ်ကြိုးစားကြည့်ပါ။');
+  });
+})();
+</script>
+</body>
+</html>
