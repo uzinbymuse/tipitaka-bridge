@@ -5,28 +5,204 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>တိပိဋက တံတား — Tipitaka Bridge</title>
 <style>
-  body{font-family:"Myanmar Text","Noto Sans Myanmar",sans-serif;max-width:640px;margin:0 auto;padding:32px 16px;color:#222;background:#fdfbf7}
+  body{font-family:"Myanmar Text","Noto Sans Myanmar",sans-serif;max-width:720px;margin:0 auto;padding:32px 16px;color:#222;background:#fdfbf7}
   h1{font-size:22px;margin:0 0 8px}
   p{line-height:1.9}
   a{color:#8a6d1b}
   .card{border:1px solid #e5dcc3;background:#fff;padding:16px;border-radius:10px;margin-top:16px}
   .big{font-size:18px}
+  .panels{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+  @media (min-width:720px){.panels{grid-template-columns:1fr 1fr}}
+  .panel{border:1px solid #e5dcc3;background:#fff;padding:16px;border-radius:10px}
+  .panel h2{font-size:18px;margin:0 0 4px}
+  .panel label{display:block;margin-top:12px;font-size:15px}
+  .panel select,.panel input{width:100%;box-sizing:border-box;font-family:inherit;font-size:16px;padding:10px;margin-top:6px;border:1px solid #d8cfae;border-radius:8px;background:#fffdf6}
+  .panel button{width:100%;margin-top:14px;padding:12px;font-family:inherit;font-size:17px;font-weight:700;color:#fff;background:#8a6d1b;border:none;border-radius:8px;cursor:pointer}
+  .panel button:disabled{background:#b9ad8a;cursor:default}
+  .hint{font-size:14px;color:#6b5f3a;margin:8px 0 0;min-height:1.5em}
+  .hint.err{color:#a33}
+  #loadError{color:#a33}
 </style>
 </head>
 <body>
 <h1>တိပိဋက တံတား</h1>
-<p>စာသား ဖတ်ရန် နှင့် မူရင်းပုံ ဖတ်ရန် — နှစ်ခုကို ချိတ်ဆက်ပေးသော တံတားပါ။ စာအုပ်တစ်အုပ်တည်းကို နှစ်ဘက်စလုံးမှ ဖတ်နိုင်သည်။</p>
+<p>စာသား နှင့် မူရင်းပုံ — အပြန်အလှန် ချိတ်ဆက်ပေးသော တံတားပါ။ စာအုပ်တစ်အုပ်တည်းကို နှစ်ဘက်စလုံးမှ ဖတ်နိုင်သည်။</p>
+<p id="loadError" hidden>စာအုပ် စာရင်း ဖွင့်မရပါ။ အောက်က လင့်ခ်များမှ ဖတ်နိုင်သည်။</p>
+
+<div class="panels">
+  <div class="panel">
+    <h2>စာသား → မူရင်းပုံ</h2>
+    <p>စာသား ဖတ်နေရင်း ထိုစာမျက်နှာ၏ မူရင်းပုံကို ကြည့်ရန်။</p>
+    <label>စာအုပ်
+      <input id="textFilter" type="search" placeholder="စာအုပ် ရှာပါ">
+      <select id="textBook" disabled></select>
+    </label>
+    <label>စာမျက်နှာ
+      <input id="textPage" type="number" min="1" value="1" disabled>
+    </label>
+    <button id="btnTextToImage" disabled>မူရင်းပုံ ဖွင့်ပါ</button>
+    <p class="hint" id="textHint"></p>
+  </div>
+
+  <div class="panel">
+    <h2>မူရင်းပုံ → စာသား</h2>
+    <p>မူရင်းပုံ ဖတ်နေရင်း ထိုစာမျက်နှာ၏ စာသားကို ရှာရန်။</p>
+    <label>စာအုပ်
+      <input id="imageFilter" type="search" placeholder="စာအုပ် ရှာပါ">
+      <select id="imageBook" disabled></select>
+    </label>
+    <label>စာမျက်နှာ
+      <input id="imagePage" type="number" min="1" value="1" disabled>
+    </label>
+    <button id="btnImageToText" disabled>စာသား ဖွင့်ပါ</button>
+    <p class="hint" id="imageHint"></p>
+  </div>
+</div>
+
 <div class="card">
-  <p class="big"><a href="https://tipitaka-web-three.vercel.app/">စာသား ဖတ်ရန် — တိပိဋက စာသား</a></p>
+  <p class="big"><a href="https://tipitaka-web-three.vercel.app/" target="_blank" rel="noopener">စာသား ဖတ်ရန် — တိပိဋက စာသား</a></p>
   <p>ပိဋကတ် စာသား ၁၉၂ အုပ် (ပါဠိ) ကို ရှာဖွေ ဖတ်ရှုနိုင်သည်။</p>
 </div>
 <div class="card">
-  <p class="big"><a href="https://tipitakapali-zin.vercel.app/">မူရင်းပုံ ဖတ်ရန် — မူရင်းပုံ စာကြည့်တိုက်</a></p>
+  <p class="big"><a href="https://tipitakapali-zin.vercel.app/" target="_blank" rel="noopener">မူရင်းပုံ ဖတ်ရန် — မူရင်းပုံ စာကြည့်တိုက်</a></p>
   <p>ပုံနှိပ်စာအုပ် ၁၁၇ အုပ်၏ မူရင်းပုံများကို ဖတ်ရှုနိုင်သည်။</p>
 </div>
 <div class="card">
   <p>ချိတ်ဆက်မှု — စာအုပ် ၁၁၇ အုပ်၊ ချိတ်ဆက်မှု ၁၄၈ ခု။ စာသား ဖတ်နေစဉ် <b>"မူရင်းပုံ ကြည့်ရန်"</b> ကို နှိပ်လျှင် ထိုစာမျက်နှာ၏ မူရင်းပုံကို ဖွင့်ပေးသည်။ မူရင်းပုံ ဖတ်နေစဉ် <b>"စာသား ရှာရန်"</b> ကို နှိပ်လျှင် ထိုစာမျက်နှာ၏ စာသားကို ဖွင့်ပေးသည်။</p>
   <p>စာသား စာအုပ် အချို့တွင် မူရင်းပုံ မရှိသေးပါ။</p>
 </div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var textBooks = [];   // {id, title, first, last, imageTitle}
+  var imageBooks = [];  // {id, title, first, last, textTitles[]}
+
+  function fillSelect(sel, items, placeholder){
+    sel.innerHTML = '';
+    var ph = document.createElement('option');
+    ph.value = ''; ph.textContent = placeholder; ph.disabled = true; ph.selected = true;
+    sel.appendChild(ph);
+    items.forEach(function(it){
+      var o = document.createElement('option');
+      o.value = it.id; o.textContent = it.title;
+      sel.appendChild(o);
+    });
+  }
+
+  function filterItems(items, q){
+    if(!q) return items;
+    q = q.toLowerCase();
+    return items.filter(function(it){ return it.title.toLowerCase().indexOf(q) !== -1; });
+  }
+
+  function updateTextPanel(){
+    var sel = $('textBook'), page = $('textPage'), hint = $('textHint');
+    var book = textBooks.find(function(b){ return b.id === sel.value; });
+    if(!book){ page.disabled = true; $('btnTextToImage').disabled = true; hint.textContent = ''; return; }
+    page.disabled = false; $('btnTextToImage').disabled = false;
+    page.min = book.first; page.max = book.last;
+    if(+page.value < book.first || +page.value > book.last) page.value = book.first;
+    hint.textContent = 'စာမျက်နှာ ' + book.first + '–' + book.last + '  →  ' + book.imageTitle;
+    hint.classList.remove('err');
+  }
+
+  function updateImagePanel(){
+    var sel = $('imageBook'), page = $('imagePage'), hint = $('imageHint');
+    var book = imageBooks.find(function(b){ return b.id === sel.value; });
+    if(!book){ page.disabled = true; $('btnImageToText').disabled = true; hint.textContent = ''; return; }
+    page.disabled = false; $('btnImageToText').disabled = false;
+    page.min = book.first; page.max = book.last;
+    if(+page.value < book.first || +page.value > book.last) page.value = book.first;
+    hint.textContent = 'စာမျက်နှာ ' + book.first + '–' + book.last + '  →  ' + book.textTitles.join(' / ');
+    hint.classList.remove('err');
+  }
+
+  function openInNewTab(url){ window.open(url, '_blank', 'noopener'); }
+
+  function load(){
+    return Promise.all([
+      fetch('mapping.json').then(function(r){ return r.json(); }),
+      fetch('image-books.json').then(function(r){ return r.json(); })
+    ]).then(function(res){
+      var rows = res[0].rows, ib = res[1];
+
+      // Text books: one row per text book (verified in the mapping data).
+      var byText = {};
+      rows.forEach(function(r){
+        byText[r.text_id] = { id: r.text_id, title: r.text_title,
+          first: r.image_printed_first, last: r.image_printed_last, imageTitle: r.image_title };
+      });
+      textBooks = Object.keys(byText).map(function(k){ return byText[k]; })
+        .sort(function(a,b){ return a.id < b.id ? -1 : 1; });
+
+      // Image books: printed range + mapped text titles from the mapping rows.
+      var byImage = {};
+      rows.forEach(function(r){
+        var b = byImage[r.image_id];
+        if(!b){ b = byImage[r.image_id] = { id: r.image_id, title: r.image_title,
+          first: r.image_printed_first, last: r.image_printed_last, textTitles: [] }; }
+        b.first = Math.min(b.first, r.image_printed_first);
+        b.last = Math.max(b.last, r.image_printed_last);
+        if(b.textTitles.indexOf(r.text_title) === -1) b.textTitles.push(r.text_title);
+      });
+      var pitakaOrder = ['Vinaya','Digha','Majjhima','Samyutta','Anguttara','Khuddaka','Abhidhamma','Atthakatha','Tika'];
+      imageBooks = Object.keys(byImage).map(function(k){ return byImage[k]; })
+        .sort(function(a,b){
+          var pa = pitakaOrder.indexOf((ib[a.id]||{}).pitaka), pb = pitakaOrder.indexOf((ib[b.id]||{}).pitaka);
+          if(pa !== pb) return pa - pb;
+          return a.title < b.title ? -1 : 1;
+        });
+
+      fillSelect($('textBook'), textBooks, '— စာအုပ် ရွေးပါ —');
+      fillSelect($('imageBook'), imageBooks, '— စာအုပ် ရွေးပါ —');
+      $('textBook').disabled = false;
+      $('imageBook').disabled = false;
+
+      $('textBook').addEventListener('change', updateTextPanel);
+      $('imageBook').addEventListener('change', updateImagePanel);
+      $('textFilter').addEventListener('input', function(){
+        var cur = $('textBook').value;
+        fillSelect($('textBook'), filterItems(textBooks, this.value), '— စာအုပ် ရွေးပါ —');
+        if(cur && textBooks.some(function(b){ return b.id === cur && b.title.toLowerCase().indexOf(this.value.toLowerCase()) !== -1; }.bind(this))) { $('textBook').value = cur; }
+        updateTextPanel();
+      });
+      $('imageFilter').addEventListener('input', function(){
+        var cur = $('imageBook').value;
+        fillSelect($('imageBook'), filterItems(imageBooks, this.value), '— စာအုပ် ရွေးပါ —');
+        if(cur && imageBooks.some(function(b){ return b.id === cur && b.title.toLowerCase().indexOf(this.value.toLowerCase()) !== -1; }.bind(this))) { $('imageBook').value = cur; }
+        updateImagePanel();
+      });
+
+      $('btnTextToImage').addEventListener('click', function(){
+        var book = textBooks.find(function(b){ return b.id === $('textBook').value; });
+        var page = parseInt($('textPage').value, 10);
+        if(!book || isNaN(page) || page < book.first || page > book.last){
+          var hint = $('textHint');
+          hint.textContent = 'စာမျက်နှာ ' + book.first + '–' + book.last + ' အတွင်း ရိုက်ပါ';
+          hint.classList.add('err');
+          return;
+        }
+        openInNewTab('to-image/?book=' + encodeURIComponent(book.id) + '&page=' + page);
+      });
+      $('btnImageToText').addEventListener('click', function(){
+        var book = imageBooks.find(function(b){ return b.id === $('imageBook').value; });
+        var page = parseInt($('imagePage').value, 10);
+        if(!book || isNaN(page) || page < book.first || page > book.last){
+          var hint = $('imageHint');
+          hint.textContent = 'စာမျက်နှာ ' + book.first + '–' + book.last + ' အတွင်း ရိုက်ပါ';
+          hint.classList.add('err');
+          return;
+        }
+        openInNewTab('to-text/?book=' + encodeURIComponent(book.id) + '&page=' + page);
+      });
+    }).catch(function(){
+      $('loadError').hidden = false;
+    });
+  }
+
+  load();
+})();
+</script>
 </body>
 </html>
