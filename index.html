@@ -77,6 +77,7 @@
   var $ = function(id){ return document.getElementById(id); };
   var textBooks = [];   // {id, title, first, last, imageTitle}
   var imageBooks = [];  // {id, title, first, last, textTitles[]}
+  var lastTextSel = '', lastImageSel = '';  // keep the chosen book while filtering
 
   function fillSelect(sel, items, placeholder){
     sel.innerHTML = '';
@@ -98,6 +99,7 @@
 
   function updateTextPanel(){
     var sel = $('textBook'), page = $('textPage'), hint = $('textHint');
+    if(sel.value) lastTextSel = sel.value;
     var book = textBooks.find(function(b){ return b.id === sel.value; });
     if(!book){ page.disabled = true; $('btnTextToImage').disabled = true; hint.textContent = ''; return; }
     page.disabled = false; $('btnTextToImage').disabled = false;
@@ -109,6 +111,7 @@
 
   function updateImagePanel(){
     var sel = $('imageBook'), page = $('imagePage'), hint = $('imageHint');
+    if(sel.value) lastImageSel = sel.value;
     var book = imageBooks.find(function(b){ return b.id === sel.value; });
     if(!book){ page.disabled = true; $('btnImageToText').disabled = true; hint.textContent = ''; return; }
     page.disabled = false; $('btnImageToText').disabled = false;
@@ -162,15 +165,21 @@
       $('textBook').addEventListener('change', updateTextPanel);
       $('imageBook').addEventListener('change', updateImagePanel);
       $('textFilter').addEventListener('input', function(){
-        var cur = $('textBook').value;
-        fillSelect($('textBook'), filterItems(textBooks, this.value), '— စာအုပ် ရွေးပါ —');
-        if(cur && textBooks.some(function(b){ return b.id === cur && b.title.toLowerCase().indexOf(this.value.toLowerCase()) !== -1; }.bind(this))) { $('textBook').value = cur; }
+        var q = this.value;
+        fillSelect($('textBook'), filterItems(textBooks, q), '— စာအုပ် ရွေးပါ —');
+        var keep = null;
+        if(!q && lastTextSel) keep = lastTextSel;
+        else if(lastTextSel && filterItems(textBooks, q).some(function(b){ return b.id === lastTextSel; })) keep = lastTextSel;
+        if(keep) $('textBook').value = keep;
         updateTextPanel();
       });
       $('imageFilter').addEventListener('input', function(){
-        var cur = $('imageBook').value;
-        fillSelect($('imageBook'), filterItems(imageBooks, this.value), '— စာအုပ် ရွေးပါ —');
-        if(cur && imageBooks.some(function(b){ return b.id === cur && b.title.toLowerCase().indexOf(this.value.toLowerCase()) !== -1; }.bind(this))) { $('imageBook').value = cur; }
+        var q = this.value;
+        fillSelect($('imageBook'), filterItems(imageBooks, q), '— စာအုပ် ရွေးပါ —');
+        var keep = null;
+        if(!q && lastImageSel) keep = lastImageSel;
+        else if(lastImageSel && filterItems(imageBooks, q).some(function(b){ return b.id === lastImageSel; })) keep = lastImageSel;
+        if(keep) $('imageBook').value = keep;
         updateImagePanel();
       });
 
