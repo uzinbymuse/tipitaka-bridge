@@ -3,7 +3,7 @@
 A tiny static site that connects the two Tipitaka readers, page by page:
 
 - **Text reader** — https://tipitaka-web-three.vercel.app (192 Pali books, Flask + Turso)
-- **Image reader** — https://tipitakapali-zin.vercel.app (117 scanned print books, static HTML + Cloudflare R2)
+- **Image reader** — https://tipitakapali-zin-vps.vercel.app (117 scanned print books, static HTML + images from the RackNerd VPS via `tipi.upanna.top/images`). The original R2 viewer https://tipitakapali-zin.vercel.app stays live and untouched.
 
 ## Routes
 

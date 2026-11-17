@@ -18,7 +18,7 @@
 <div class="card" id="fallback" style="display:none">
   <p id="msg"></p>
   <p><a id="backText" href="https://tipitaka-web-three.vercel.app/">စာသား ဖတ်ရန် (တိပိဋက စာသား)</a></p>
-  <p><a href="https://tipitakapali-zin.vercel.app/">မူရင်းပုံ စာကြည့်တိုက်</a></p>
+  <p><a href="https://tipitakapali-zin-vps.vercel.app/">မူရင်းပုံ စာကြည့်တိုက်</a></p>
 </div>
 <script>
 (function(){
@@ -26,9 +26,9 @@
   var book = params.get('book') || '';
   var page = parseInt(params.get('page') || '1', 10) || 1;
   var TEXT_APP = 'https://tipitaka-web-three.vercel.app/';
-  var IMAGE_APP = 'https://tipitakapali-zin.vercel.app/';
-  var R2_BOOKS = 'https://pub-a798847c0d8e477ea01a3d9a9435680e.r2.dev/books.json';
-  var R2_IMG = 'https://pub-a798847c0d8e477ea01a3d9a9435680e.r2.dev/books/';
+  var IMAGE_APP = 'https://tipitakapali-zin-vps.vercel.app/';
+  var R2_BOOKS = 'https://tipi.upanna.top/images/books.json';
+  var R2_IMG = 'https://tipi.upanna.top/images/books/';
 
   function showFallback(msg){
     document.getElementById('status').style.display = 'none';
