@@ -17,16 +17,16 @@
 <p id="status">ပုံ စာမျက်နှာသို့ သွားနေသည်…</p>
 <div class="card" id="fallback" style="display:none">
   <p id="msg"></p>
-  <p><a id="backText" href="https://tipitaka-02.upanna.top/">စာသား ဖတ်ရန် (တိပိဋက စာသား)</a></p>
-  <p><a href="https://tipitaka-01.upanna.top/">မူရင်းပုံ စာကြည့်တိုက်</a></p>
+  <p><a id="backText" href="https://tipitaka-web-three.vercel.app/">စာသား ဖတ်ရန် (တိပိဋက စာသား)</a></p>
+  <p><a href="https://tipitakapali-zin-vps.vercel.app/">မူရင်းပုံ စာကြည့်တိုက်</a></p>
 </div>
 <script>
 (function(){
   var params = new URLSearchParams(location.search);
   var book = params.get('book') || '';
   var page = parseInt(params.get('page') || '1', 10) || 1;
-  var TEXT_APP = 'https://tipitaka-02.upanna.top/';
-  var IMAGE_APP = 'https://tipitaka-01.upanna.top/';
+  var TEXT_APP = 'https://tipitaka-web-three.vercel.app/';
+  var IMAGE_APP = 'https://tipitakapali-zin-vps.vercel.app/';
   var R2_BOOKS = 'https://tipi.upanna.top/images/books.json';
   var R2_IMG = 'https://tipi.upanna.top/images/books/';
 
